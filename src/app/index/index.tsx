@@ -2,8 +2,10 @@ import { Categories } from "@/components/categories";
 import { Link } from "@/components/link";
 import { Option } from "@/components/option";
 import { colors } from "@/styles/colors";
+import { categories } from "@/utils/categories";
 import { MaterialIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
+import { useState } from "react";
 import {
   FlatList,
   Image,
@@ -15,6 +17,7 @@ import {
 import { styles } from "./styles";
 
 export default function Index() {
+  const [category, setCategory] = useState(categories[0].name);
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -26,7 +29,7 @@ export default function Index() {
           <MaterialIcons name="add" size={32} color={colors.green[300]} />
         </TouchableOpacity>
       </View>
-      <Categories />
+      <Categories onChange={setCategory} selected={category} />
 
       <FlatList
         data={["0", "1", "2"]}
