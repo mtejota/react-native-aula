@@ -15,7 +15,6 @@ export default function Add() {
   const [url, setUrl] = useState("");
 
   async function handleAdd() {
-    ///console.log({ name, url, category });
     try {
       if (!category) {
         return Alert.alert("Categoria", "Selecione a categoria");
@@ -32,8 +31,9 @@ export default function Add() {
         category,
         url,
       });
-      const data = await LinkStorage.get();
-      console.log(data);
+      Alert.alert("Sucesso", "Link adicionado com sucesso!", [
+        { text: "OK", onPress: () => router.back() },
+      ]);
     } catch (error) {
       Alert.alert("Erro", "Não foi possível adicionar o link");
       console.log(error);

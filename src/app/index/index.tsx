@@ -1,12 +1,14 @@
 import { Categories } from "@/components/categories";
 import { Link } from "@/components/link";
 import { Option } from "@/components/option";
+import { LinkStorage } from "@/storage/link-storage";
 import { colors } from "@/styles/colors";
 import { categories } from "@/utils/categories";
 import { MaterialIcons } from "@expo/vector-icons";
-import { router } from "expo-router";
-import { useState } from "react";
+import { router, useFocusEffect } from "expo-router";
+import { useCallback, useState } from "react";
 import {
+  Alert,
   FlatList,
   Image,
   Modal,
@@ -17,7 +19,27 @@ import {
 import { styles } from "./styles";
 
 export default function Index() {
+  const [links, setLinks] = useState<LinkStorage[]>([]);
   const [category, setCategory] = useState(categories[0].name);
+
+  async function getLinks() {
+    try {
+      const response = await LinkStorage.get();
+      const filteredLinks = response.filter(
+        (link) => link.category === category,
+      );
+      setLinks(filteredLinks);
+    } catch (error) {
+      Alert.alert("Erro", "Não foi possível carregar os links.");
+    }
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      getLinks();
+    }, [category]),
+  );
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -32,12 +54,12 @@ export default function Index() {
       <Categories onChange={setCategory} selected={category} />
 
       <FlatList
-        data={["0", "1", "2"]}
-        keyExtractor={(item) => item}
-        renderItem={() => (
+        data={links}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
           <Link
-            name="Rocketseat"
-            url="https://rocketseat.com.br"
+            name={item.name}
+            url={item.url}
             onDetails={() => console.log("Clicou no link!")}
           />
         )}
