@@ -1,6 +1,7 @@
 import Button from "@/components/button";
 import { Categories } from "@/components/categories";
 import { Input } from "@/components/input";
+import { LinkStorage } from "@/storage/link-storage";
 import { colors } from "@/styles/colors";
 import { MaterialIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
@@ -13,16 +14,29 @@ export default function Add() {
   const [name, setName] = useState("");
   const [url, setUrl] = useState("");
 
-  function handleAdd() {
-    console.log({ name, url, category });
-    if (!category) {
-      return Alert.alert("Categoria", "Selecione a categoria");
-    }
-    if (!name.trim()) {
-      return Alert.alert("Nome", "Informe o nome do site");
-    }
-    if (!url.trim()) {
-      return Alert.alert("URL", "Insira a URL do site");
+  async function handleAdd() {
+    ///console.log({ name, url, category });
+    try {
+      if (!category) {
+        return Alert.alert("Categoria", "Selecione a categoria");
+      }
+      if (!name.trim()) {
+        return Alert.alert("Nome", "Informe o nome do site");
+      }
+      if (!url.trim()) {
+        return Alert.alert("URL", "Insira a URL do site");
+      }
+      await LinkStorage.save({
+        id: new Date().getTime().toString(),
+        name,
+        category,
+        url,
+      });
+      const data = await LinkStorage.get();
+      console.log(data);
+    } catch (error) {
+      Alert.alert("Erro", "Não foi possível adicionar o link");
+      console.log(error);
     }
   }
 
@@ -39,7 +53,12 @@ export default function Add() {
 
       <View style={styles.form}>
         <Input placeholder="Nome" onChangeText={setName} autoCorrect={false} />
-        <Input placeholder="URL" onChangeText={setUrl} />
+        <Input
+          placeholder="URL"
+          onChangeText={setUrl}
+          autoCorrect={false}
+          autoCapitalize="none"
+        />
         <Button title="Adicionar" onPress={handleAdd} />
       </View>
     </View>
