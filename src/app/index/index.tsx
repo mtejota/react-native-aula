@@ -19,6 +19,7 @@ import {
 import { styles } from "./styles";
 
 export default function Index() {
+  const [showModal, setShowModal] = useState(false);
   const [links, setLinks] = useState<LinkStorage[]>([]);
   const [category, setCategory] = useState(categories[0].name);
 
@@ -60,19 +61,22 @@ export default function Index() {
           <Link
             name={item.name}
             url={item.url}
-            onDetails={() => console.log("Clicou no link!")}
+            onDetails={() => setShowModal(true)}
           />
         )}
         style={styles.links}
         contentContainerStyle={styles.linksContent}
         showsVerticalScrollIndicator={false}
       />
-      <Modal transparent visible={false}>
+      <Modal transparent visible={showModal} animationType="slide">
         <View style={styles.modal}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalCategory}>Curso</Text>
-              <TouchableOpacity activeOpacity={0.4}>
+              <TouchableOpacity
+                activeOpacity={0.4}
+                onPress={() => setShowModal(false)}
+              >
                 <MaterialIcons
                   name="close"
                   size={24}
