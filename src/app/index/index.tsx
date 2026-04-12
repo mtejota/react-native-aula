@@ -34,6 +34,10 @@ export default function Index() {
       Alert.alert("Erro", "Não foi possível carregar os links.");
     }
   }
+  function handleDetails(selected: LinkStorage) {
+    setShowModal(true);
+    console.log(selected);
+  }
 
   useFocusEffect(
     useCallback(() => {
@@ -61,7 +65,7 @@ export default function Index() {
           <Link
             name={item.name}
             url={item.url}
-            onDetails={() => setShowModal(true)}
+            onDetails={() => handleDetails(item)}
           />
         )}
         style={styles.links}
