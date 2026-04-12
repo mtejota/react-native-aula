@@ -11,6 +11,7 @@ import {
   Alert,
   FlatList,
   Image,
+  Linking,
   Modal,
   Text,
   TouchableOpacity,
@@ -22,6 +23,7 @@ export default function Index() {
   const [showModal, setShowModal] = useState(false);
   const [links, setLinks] = useState<LinkStorage[]>([]);
   const [category, setCategory] = useState(categories[0].name);
+  const [link, setLink] = useState<LinkStorage>({} as LinkStorage);
 
   async function getLinks() {
     try {
@@ -36,7 +38,37 @@ export default function Index() {
   }
   function handleDetails(selected: LinkStorage) {
     setShowModal(true);
-    console.log(selected);
+    setLink(selected);
+  }
+  async function linkRemove() {
+    try {
+      await LinkStorage.remove(link.id);
+      setShowModal(false);
+      getLinks();
+    } catch (error) {
+      Alert.alert("Erro", "Não foi possível excluir o link.");
+    }
+  }
+  function handleRemove() {
+    Alert.alert("Excluir", "Deseja realmente excluir este link?", [
+      { style: "cancel", text: "Cancelar" },
+      { text: "sim", onPress: linkRemove },
+    ]);
+  }
+  async function openUrl() {
+    try {
+      await Linking.openURL(link.url);
+      setShowModal(false);
+    } catch (error) {
+      Alert.alert("Erro", "Não foi possível abrir o link.");
+      console.log(error);
+    }
+  }
+  function handleOpenUrl() {
+    Alert.alert("Abrir Link", "Deseja abrir este link?", [
+      { style: "cancel", text: "cancelar" },
+      { text: "sim", onPress: openUrl },
+    ]);
   }
 
   useFocusEffect(
@@ -76,7 +108,7 @@ export default function Index() {
         <View style={styles.modal}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalCategory}>Curso</Text>
+              <Text style={styles.modalCategory}>{link.category}</Text>
               <TouchableOpacity
                 activeOpacity={0.4}
                 onPress={() => setShowModal(false)}
@@ -88,11 +120,21 @@ export default function Index() {
                 />
               </TouchableOpacity>
             </View>
-            <Text style={styles.modalLinkName}>Rockeseat</Text>
-            <Text style={styles.modalLinkUrl}>https://rocketseat.com.br</Text>
+            <Text style={styles.modalLinkName}>{link.name}</Text>
+            <Text style={styles.modalLinkUrl}>{link.url}</Text>
             <View style={styles.modalOptions}>
-              <Option name="Excluir" icon="delete" variant="secondary" />
-              <Option name="Abrir" icon="language" variant="primary" />
+              <Option
+                name="Excluir"
+                icon="delete"
+                variant="secondary"
+                onPress={handleRemove}
+              />
+              <Option
+                name="Abrir"
+                icon="language"
+                variant="primary"
+                onPress={handleOpenUrl}
+              />
             </View>
           </View>
         </View>
